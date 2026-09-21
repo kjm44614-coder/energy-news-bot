@@ -24,9 +24,9 @@ CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
 SEEN_FILE = "seen.json"
-LOOKBACK_HOURS = 24      # 이 시간보다 오래된 기사는 무시
+LOOKBACK_HOURS = 3      # 이 시간보다 오래된 기사는 무시
 MAX_PER_RUN = 15        # 1회 실행당 최대 게시 수 (첫 실행 폭주 방지)
-SEND_INTERVAL = 3       # 메시지 간 대기(초) - 텔레그램 rate limit 대응
+SEND_INTERVAL = 30       # 메시지 간 대기(초) - 텔레그램 rate limit 대응
 HEADERS = {"User-Agent": "Mozilla/5.0 (energy-news-bot)"}
 
 # ---------------------------------------------------------------------------
