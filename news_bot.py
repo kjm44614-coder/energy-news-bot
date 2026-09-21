@@ -130,7 +130,7 @@ CATEGORIES = {
     },
     "Polysilicon": {
         "require_topic": False,
-        "core": r"polysilicon|Tongwei|GCL Tech|Daqo|Wacker|OCI|Hemlock|silicon metal",
+        "core": r"polysilicon|Tongwei|GCL Tech|Daqo|Wacker|\bOCI\b|Hemlock|silicon metal",
         "topics": {
             "가격/생산": r"price|prices|output|production|inventory|stockpile|utili[sz]ation",
             "정책/무역": r"tariff|export|Section 232|investigation|anti-?dumping|control|duties",
