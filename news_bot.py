@@ -101,7 +101,7 @@ CATEGORIES = {
     },
     "Fuelcell": {
         "require_topic": False,
-        "core": r"fuel ?cells?|Bloom Energy|Plug Power|FuelCell Energy|Ballard|Doosan Fuel Cell|\bSOFC\b",
+        "core": r"fuel ?cells?|Bloom Energy|Plug Power|FuelCell Energy|Ballard Power|Doosan Fuel Cell|\bSOFC\b",
         "topics": {
             "딜/계약": r"data ?cent|contract|agreement|order|deploy|supply|megawatt|\bMW\b|\bGW\b",
             "기술/제품": r"launch|unveil|new (product|model)|efficiency|technology",
@@ -130,7 +130,7 @@ CATEGORIES = {
     },
     "Polysilicon": {
         "require_topic": False,
-        "core": r"polysilicon|Tongwei|GCL Tech|Daqo|Wacker|\bOCI\b|Hemlock|silicon metal",
+        "core": r"polysilicon|Tongwei|GCL Tech|Daqo|Wacker|\bOCI\b|Hemlock Semiconductor|silicon metal",
         "topics": {
             "가격/생산": r"price|prices|output|production|inventory|stockpile|utili[sz]ation",
             "정책/무역": r"tariff|export|Section 232|investigation|anti-?dumping|control|duties",
