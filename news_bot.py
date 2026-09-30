@@ -58,6 +58,7 @@ SOURCES = {
 
 DIRECT_FEEDS = {
     # "PV Magazine (RSS)": "https://www.pv-magazine.com/feed/",   # 예시: 직접 확인 후 추가
+      "Utility Dive (RSS)": "https://www.utilitydive.com/feeds/news/",
 }
 
 
@@ -246,6 +247,7 @@ def collect():
                 "time": ts or datetime.now(timezone.utc), "hits": hits,
             })
     items.sort(key=lambda x: x["time"])
+    items = fetch_utilitydive_home() + items
     return items
 
 
@@ -319,6 +321,52 @@ def main():
     save_seen(seen)
     print(f"게시 {sent}건")
 
+
+# ---------------------------------------------------------------------------
+# Utility Dive 홈 화면: 메인 기사 + Top stories 5개 (키워드와 무관하게 전부 게시)
+# ---------------------------------------------------------------------------
+UTILITYDIVE_HOME = "https://www.utilitydive.com/"
+
+
+def fetch_utilitydive_home():
+    try:
+        from bs4 import BeautifulSoup
+        r = requests.get(UTILITYDIVE_HOME, headers=HEADERS, timeout=20)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+    except Exception as ex:
+        print(f"[WARN] Utility Dive 홈 수집 실패: {ex}")
+        return []
+
+    picks = []
+    h1 = soup.find("h1")
+    a = h1.find("a", href=True) if h1 else None
+    if a and "/news/" in a["href"]:
+        picks.append(("메인기사", a))
+
+    head = soup.find(lambda t: t.name in ("h2", "h3") and t.get_text(strip=True).lower() == "top stories")
+    if head:
+        for tag in head.find_all_next(["h2", "h3"]):
+            if tag.name == "h2":
+                break
+            a = tag.find("a", href=True)
+            if a and "/news/" in a["href"]:
+                picks.append(("TopStories", a))
+
+    if not picks:
+        print("[WARN] Utility Dive 홈 구조가 바뀌어 기사를 찾지 못했습니다.")
+
+    items = []
+    for label, a in picks:
+        title = a.get_text(" ", strip=True)
+        items.append({
+            "source": "Utility Dive",
+            "title": title,
+            "link": requests.compat.urljoin(UTILITYDIVE_HOME, a["href"]),
+            "time": datetime.now(timezone.utc),
+            "hits": classify(title) + [("UtilityDive", [label])],
+        })
+    return items
 
 if __name__ == "__main__":
     main()
