@@ -53,6 +53,7 @@ SOURCES = {
     "Rystad": "rystadenergy.com",
     "Wood Mackenzie": "woodmac.com",
     "Nikkei Asia": "asia.nikkei.com",
+    "The Guardian": "theguardian.com",
 }
 
 DIRECT_FEEDS = {
@@ -84,7 +85,7 @@ CATEGORIES = {
         "core": r"\bsolar\b|photovoltaic|\bPV\b|perovskite",
         "topics": {
             "공급망": r"polysilicon|wafer|\bcells?\b|module|price|capacity|curtail|cut(s|ting)? output|overcapacity",
-            "정책/무역": r"tariff|subsid|tax credit|anti-?dumping|countervailing|Section 232|\bFEOC\b|\b45X\b|\bITC\b|duties|trade",
+            "정책/무역": r"tariff|subsid|tax credit|anti-?dumping|countervailing|Section 232|\bFEOC\b|\b45X\b|\bITC\b|duties|trade|permit",
             "프로젝트": r"\bPPA\b|gigawatt|\bGW\b|\bMW\b|solar (farm|park|plant|project)|commission|groundbreaking|energi[sz]ed|online",
             "기술": r"efficiency|perovskite|TOPCon|\bHJT\b|tandem|back.?contact|record",
         },
@@ -111,12 +112,12 @@ CATEGORIES = {
     },
     "Electricity": {
         "require_topic": True,
-        "core": r"electricity|power grid|power (price|prices|demand|market)|wholesale power|blackout|power outage|transmission (line|grid|investment)|capacity market|peak demand",
+        "core": r"electricity|power grid|power (price|prices|demand|market)|wholesale power|blackout|power outage|transmission (line|grid|investment)|capacity market|peak demand|power ?lines?",
         "topics": {
             "수급/가격": r"price|prices|wholesale|peak|demand|outage|blackout|shortage|record|spot",
-            "정책/규제": r"tariff|rate case|rate hike|regulat|grid plan|transmission|FERC|policy|approve",
+            "정책/규제": r"tariff|rate case|rate hike|regulat|grid plan|transmission|FERC|policy|approve|permit",
             "지정학": r"sanction|security|supply (disruption|cut)|gas|LNG|embargo|geopolit",
-            "인프라": r"power plant|new plant|investment|interconnect|substation|build",
+            "인프라": r"power plant|new plant|investment|interconnect|substation|build|power ?lines?",
         },
     },
     "Module": {
@@ -135,6 +136,17 @@ CATEGORIES = {
             "가격/생산": r"price|prices|output|production|inventory|stockpile|utili[sz]ation",
             "정책/무역": r"tariff|export|Section 232|investigation|anti-?dumping|control|duties",
             "기업동향": r"expansion|cut|curtail|shutdown|bankrupt|consolidat|acquir|merger|plant",
+        },
+    },
+      "Bloom Energy": {
+        "require_topic": False,
+        "core": r"Bloom Energy",
+        "topics": {
+            "딜/계약": r"data ?cent|contract|agreement|order|deploy|supply|megawatt|\bMW\b|\bGW\b|partnership|\bPPA\b",
+            "실적/주가": r"earnings|results|quarter|backlog|guidance|revenue|shares|stock|analyst|price target",
+            "기술/제품": r"launch|unveil|new (product|model)|efficiency|technology|electrolyzer|\bSOFC\b",
+            "정책": r"subsid|hydrogen|policy|tax credit|\b45V\b|incentive|permit",
+            "기업동향": r"acquir|acquisition|merger|joint venture|stake|financing|convertible|investment",
         },
     },
 }
