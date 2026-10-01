@@ -152,6 +152,47 @@ CATEGORIES = {
     },
 }
 
+# ---------------------------------------------------------------------------
+# [추가] 정책/법안 키워드: 모든 카테고리의 정책 하위주제에 한 번에 붙임
+# ---------------------------------------------------------------------------
+EXTRA_POLICY_KEYWORDS = r"Senat(e|or)|Parliament|National Assembly"
+
+POLICY_TOPICS = {
+    "AIDC/Datacenter": "규제/인허가",
+    "Solar": "정책/무역",
+    "Wind": "규제",
+    "Fuelcell": "정책",
+    "Electricity": "정책/규제",
+    "Module": "무역/정책",
+    "Polysilicon": "정책/무역",
+    "Bloom Energy": "정책",
+}
+for _cat, _topic in POLICY_TOPICS.items():
+    if _cat in CATEGORIES and _topic in CATEGORIES[_cat]["topics"]:
+        CATEGORIES[_cat]["topics"][_topic] += "|" + EXTRA_POLICY_KEYWORDS
+
+# ---------------------------------------------------------------------------
+# [추가] 국가 필터: 제외 국가만 언급되고 주요국은 언급 없으면 게시하지 않음
+# ---------------------------------------------------------------------------
+MAJOR_COUNTRIES = re.compile(
+    r"\bU\.?S\.?A?\b|United States|(?<!Latin )(?<!South )(?<!Central )America|Canada|"
+    r"China|Chinese|Japan|Korea|Taiwan|India|Vietnam|Malaysia|Thailand|Indonesia|Philippines|Singapore|"
+    r"Europe|\bEU\b|German|France|French|\bUK\b|Britain|British|England|Scotland|Spain|Spanish|Ital|"
+    r"Netherlands|Dutch|Poland|Polish|Denmark|Danish|Sweden|Swedish|Norw|Finland|Finnish|Belgi|Ireland|Irish|"
+    r"Portugal|Austria|Switzerland|Swiss|Greece|Greek|Czech|Romania|Hungary|"
+    r"Australia|New Zealand"
+)
+EXCLUDED_COUNTRIES = re.compile(
+    r"Sri Lanka|Ukrain|Pakistan|Bangladesh|Nepal|Myanmar|Cambodia|\bLaos\b|Mongolia|"
+    r"Kazakh|Uzbek|Kyrgyz|Tajik|Turkmen|Afghan|Armenia|Azerbaijan|Moldova|Belarus|"
+    r"Serbia|Bosnia|Albania|Kosovo|Macedonia|Montenegro|"
+    r"Africa|Nigeria|Kenya|Ghana|Ethiopia|Egypt|Morocco|Zambia|Zimbabwe|Tanzania|Uganda|Senegal|Namibia|Mozambique"
+)
+
+
+def is_excluded_region(text: str) -> bool:
+    return bool(EXCLUDED_COUNTRIES.search(text)) and not MAJOR_COUNTRIES.search(text)
+
 COMPILED = {
     name: {
         "require_topic": cfg["require_topic"],
@@ -241,6 +282,8 @@ def collect():
             summary = strip_html(e.get("summary", ""))
             hits = classify(f"{title} {summary}")
             if not hits:
+                continue
+            if is_excluded_region(f"{title} {summary}"):
                 continue
             items.append({
                 "source": name, "title": title, "link": e.get("link", ""),
