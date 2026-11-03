@@ -62,6 +62,32 @@ DIRECT_FEEDS = {
 }
 
 
+# ---------------------------------------------------------------------------
+# [추가] 관심 기업 키워드 검색: 매체 제한 없이 Google 뉴스 전체에서 검색
+# ---------------------------------------------------------------------------
+WATCH_QUERIES = {
+    "Bloom Energy": '"Bloom Energy"',
+}
+
+# 주식 보유 공시·매매 알림 같은 자동 생성 기사 걸러내기
+WATCH_NOISE = re.compile(
+    r"shares (sold|bought|acquired|purchased) by|stake (in|raised|lowered|trimmed|boosted|cut)|"
+    r"position in|holdings in|\b13F\b|short interest|unusual options",
+    re.I,
+)
+
+
+def google_news_query_url(query: str) -> str:
+    q = quote(f"{query} when:{LOOKBACK_HOURS}h")
+    return f"https://news.google.com/rss/search?q={q}&hl=en-US&gl=US&ceid=US:en"
+
+
+def entry_source(e, default: str) -> str:
+    s = e.get("source")
+    if default.startswith("[검색]") and s and s.get("title"):
+        return s["title"]
+    return default
+
 def google_news_url(domain: str) -> str:
     q = quote(f"site:{domain} when:{LOOKBACK_HOURS}h")
     return f"https://news.google.com/rss/search?q={q}&hl=en-US&gl=US&ceid=US:en"
@@ -269,6 +295,7 @@ def save_seen(seen: dict):
 def collect():
     feeds = {n: google_news_url(d) for n, d in SOURCES.items()}
     feeds.update(DIRECT_FEEDS)
+    feeds.update({f"[검색] {n}": google_news_query_url(q) for n, q in WATCH_QUERIES.items()})
     cutoff = datetime.now(timezone.utc) - timedelta(hours=LOOKBACK_HOURS)
     items = []
     for name, url in feeds.items():
@@ -277,7 +304,7 @@ def collect():
             if ts and ts < cutoff:
                 continue
             title = clean_title(e.get("title", ""), name)
-            if not title:
+            if not title or WATCH_NOISE.search(title):
                 continue
             summary = strip_html(e.get("summary", ""))
             hits = classify(f"{title} {summary}")
@@ -286,7 +313,7 @@ def collect():
             if is_excluded_region(f"{title} {summary}"):
                 continue
             items.append({
-                "source": name, "title": title, "link": e.get("link", ""),
+                "source": entry_source(e, name), "title": title, "link": e.get("link", ""),
                 "time": ts or datetime.now(timezone.utc), "hits": hits,
             })
     items.sort(key=lambda x: x["time"])
